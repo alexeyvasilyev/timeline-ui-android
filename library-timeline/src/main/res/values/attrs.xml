@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="TimelineView">
+        <attr name="timelineColorMajor1" format="color" />
+        <attr name="timelineColorMajor2" format="color" />
+        <attr name="timelineColorBackground" format="color" />
+        <attr name="timelineColorPointer" format="color" />
+        <attr name="timelineColorSelected1" format="color" />
+        <attr name="timelineColorSelected2" format="color" />
+        <attr name="timelineColorNoData" format="color" />
+    </declare-styleable>
+
+</resources>

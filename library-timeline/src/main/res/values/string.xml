@@ -1,0 +1,7 @@
+<resources>
+
+    <string name="DATE_FORMAT_YEAR">EEE, MMMM d</string>
+    <string name="TIME_FORMAT_TIMELINE_HOUR">HH:mm:ss</string>
+    <string name="TIME_FORMAT_TIMELINE_MINS">mm</string>
+
+</resources>
