@@ -12,3 +12,18 @@ Android timeline UI widget written in Java
 
 ## See also:
 - [Web timeline UI widget written in JavaScript](https://github.com/alexeyvasilyev/timeline-ui-web)
+
+## Compile
+
+To use this library in your project with gradle add this to your build.gradle:
+
+```gradle
+allprojects {
+  repositories {
+    maven { url 'https://jitpack.io' }
+  }
+}
+dependencies {
+  implementation 'com.github.alexeyvasilyev:timeline-ui-android:1.0.0'
+}
+```
