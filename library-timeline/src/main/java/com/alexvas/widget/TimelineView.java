@@ -315,7 +315,7 @@ public class TimelineView extends View {
         return _selectedMsec;
     }
 
-    private void setInterval(long intervalMsec) {
+    public void setInterval(long intervalMsec) {
         intervalMsec = Math.min(MAX_INTERVAL, Math.max(intervalMsec, MIN_INTERVAL));
         if (intervalMsec != _intervalMsec) {
             _intervalMsec = intervalMsec;
@@ -407,7 +407,7 @@ public class TimelineView extends View {
         }
     }
 
-    private void setIntervalWithAnimation(long intervalMsec) {
+    public void setIntervalWithAnimation(long intervalMsec) {
         cancelAnimation();
         long offset = intervalMsec - _intervalMsec;
         _animator = ValueAnimator.ofInt(0, (int)offset);
