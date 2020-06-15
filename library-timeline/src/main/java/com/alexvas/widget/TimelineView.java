@@ -42,15 +42,16 @@ import java.util.TimeZone;
 
 public class TimelineView extends View {
 
-    public static final long INTERVAL_MIN_1   =            60 * 1000; //  1 min
-    public static final long INTERVAL_MIN_5   =        5 * 60 * 1000; //  5 min
-    public static final long INTERVAL_MIN_15  =       15 * 60 * 1000; // 15 min
-    public static final long INTERVAL_MIN_30  =       30 * 60 * 1000; // 30 min
-    public static final long INTERVAL_HOUR_1  =       60 * 60 * 1000; //  1 hour
-    public static final long INTERVAL_HOUR_6  =   6 * 60 * 60 * 1000; //  6 hours
-    public static final long INTERVAL_HOUR_12 =  12 * 60 * 60 * 1000; // 12 hours
-    public static final long INTERVAL_DAY_1   =  24 * 60 * 60 * 1000; //  1 day
-    public static final long INTERVAL_DAY_7   = 168 * 60 * 60 * 1000; //  7 days
+    public static final long INTERVAL_MIN_1   =            60 * 1000L; //  1 min
+    public static final long INTERVAL_MIN_5   =        5 * 60 * 1000L; //  5 min
+    public static final long INTERVAL_MIN_15  =       15 * 60 * 1000L; // 15 min
+    public static final long INTERVAL_MIN_30  =       30 * 60 * 1000L; // 30 min
+    public static final long INTERVAL_HOUR_1  =       60 * 60 * 1000L; //  1 hour
+    public static final long INTERVAL_HOUR_6  =   6 * 60 * 60 * 1000L; //  6 hours
+    public static final long INTERVAL_HOUR_12 =  12 * 60 * 60 * 1000L; // 12 hours
+    public static final long INTERVAL_DAY_1   =  24 * 60 * 60 * 1000L; //  1 day
+    public static final long INTERVAL_DAY_7   = 168 * 60 * 60 * 1000L; //  7 days
+    public static final long INTERVAL_DAY_30  = 720 * 60 * 60 * 1000L; // 30 days
 
     @SuppressWarnings("FieldCanBeLocal")
     private final float STROKE_SELECTED_WIDTH = 2f;
@@ -59,7 +60,7 @@ public class TimelineView extends View {
     @SuppressWarnings("FieldCanBeLocal")
     private final long MIN_INTERVAL = INTERVAL_MIN_1; // 1 min
     @SuppressWarnings("FieldCanBeLocal")
-    private final long MAX_INTERVAL = INTERVAL_DAY_7; // 7 days
+    private final long MAX_INTERVAL = INTERVAL_DAY_30; // 30 days
 
     private final int ANIMATION_DURATION_MSEC = 150;
 
@@ -89,9 +90,10 @@ public class TimelineView extends View {
         @NonNull
         public String toString() {
             return String.format(
-                    Locale.US,
-                    "TimeRecord: {timestamp: %d, duration: %d, object: \"%s\"}",
+                    Locale.ENGLISH,
+                    "TimeRecord: {timestamp: %d (%s), duration: %d, object: \"%s\"}",
                     timestampMsec,
+                    new SimpleDateFormat("MM-dd HH:mm:ss", Locale.ENGLISH).format(new Date(timestampMsec)),
                     durationMsec,
                     object.toString());
         }
@@ -289,20 +291,21 @@ public class TimelineView extends View {
 //      if (Math.abs(_selectedMsec - currentMsec) > 10000)
 //          Log.w("ZZZ", "currentMsec diff: " + Math.abs(_selectedMsec - currentMsec));
         _selectedMsec = Math.min(currentMsec, System.currentTimeMillis());
+//      Log.i("ZZZ", "_selectedMsec: " + _selectedMsec + " (" + new Date(_selectedMsec) + ")");
         _selectedMsecDate.setTime(_selectedMsec);
         _needUpdate = true;
     }
 
     public void setCurrentWithAnimation(long currentMsec) {
         cancelAnimation();
-        long offset = currentMsec - _selectedMsec;
+        long offset = (currentMsec - _selectedMsec) / 1000L;
         _animator = ValueAnimator.ofInt(0, (int)offset);
         _animator.setDuration(ANIMATION_DURATION_MSEC);
         _animator.setInterpolator(new AccelerateDecelerateInterpolator());
         final long targetMsec = _selectedMsec;
         _animator.addUpdateListener(animation -> {
             Integer value = (Integer) animation.getAnimatedValue();
-            setCurrent(targetMsec + (long)value);
+            setCurrent(targetMsec + (long)value * 1000L);
             invalidate();
         });
         _animator.start();
@@ -321,7 +324,11 @@ public class TimelineView extends View {
     }
 
     public void increaseIntervalWithAnimation() {
-        if (_intervalMsec > INTERVAL_DAY_1 - 1) {
+        if (_intervalMsec > INTERVAL_DAY_7 - 1) {
+
+            setIntervalWithAnimation(INTERVAL_DAY_30);
+
+        } else if (_intervalMsec > INTERVAL_DAY_1 - 1) {
 
             setIntervalWithAnimation(INTERVAL_DAY_7);
 
@@ -361,7 +368,11 @@ public class TimelineView extends View {
     }
 
     public void decreaseIntervalWithAnimation() {
-        if (_intervalMsec > INTERVAL_DAY_7 - 1) {
+        if (_intervalMsec > INTERVAL_DAY_30 - 1) {
+
+            setIntervalWithAnimation(INTERVAL_DAY_7);
+
+        } else if (_intervalMsec > INTERVAL_DAY_7 - 1) {
 
             setIntervalWithAnimation(INTERVAL_DAY_1);
 
@@ -572,7 +583,7 @@ public class TimelineView extends View {
 
     @Nullable
     public TimeRecord getNextMajorRecord() {
-        return getNextRecord(_selectedMsec, _recordsMajor1);
+        return getNextRecord(_selectedMsec + 1000 /*magic constant, 1 sec*/, _recordsMajor1);
     }
 
     @Nullable
@@ -1096,6 +1107,9 @@ public class TimelineView extends View {
                                 if (!drawHoursMinutes(canvas, msecInPixels, INTERVAL_HOUR_12))
                                     // Draw every 24 hours
                                     drawHoursMinutes(canvas, msecInPixels, INTERVAL_DAY_1);
+                                    if (!drawHoursMinutes(canvas, msecInPixels, INTERVAL_DAY_1))
+                                        // Draw every day
+                                        drawHoursMinutes(canvas, msecInPixels, INTERVAL_DAY_7);
 
         // Draw ruler scale, e.g. "5 days", "30 min"
         String scale = getRulerScale();
@@ -1121,7 +1135,9 @@ public class TimelineView extends View {
 
     @NonNull
     private String getRulerScale() {
-        if (_intervalMsec > INTERVAL_DAY_7 - 1) {
+        if (_intervalMsec > INTERVAL_DAY_30 - 1) {
+            return "30 days";
+        } else if (_intervalMsec > INTERVAL_DAY_7 - 1) {
             return "7 days";
         }  else if (_intervalMsec > INTERVAL_DAY_1 - 1) {
             return "1 day";
