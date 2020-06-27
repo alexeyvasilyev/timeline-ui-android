@@ -1,6 +1,8 @@
 package com.alexvas.timeline.demo.ui
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.alexvas.timeline.demo.R
 import com.alexvas.widget.TimelineView
 import com.alexvas.widget.TimelineView.TimeRecord
+import kotlin.math.max
 
 class TimelineFragment : Fragment() {
 
@@ -47,6 +50,33 @@ class TimelineFragment : Fragment() {
             override fun onRequestMoreBackgroundData() {
             }
         })
+        val zoomIn = root.findViewById<View>(R.id.zoomIn)
+        val zoomOut = root.findViewById<View>(R.id.zoomOut)
+        zoomIn.setOnClickListener {
+            timelineView.decreaseIntervalWithAnimation()
+            // isMinInterval will be valid only after animation completed (150 msec)
+            Handler(Looper.getMainLooper()).postDelayed({
+                zoomIn.isEnabled = !timelineView.isMinInterval
+                zoomOut.isEnabled = true
+            }, TimelineView.ANIMATION_DURATION_MSEC + 1)
+        }
+        zoomOut.setOnClickListener {
+            timelineView.increaseIntervalWithAnimation()
+            // isMaxInterval will be valid only after animation completed (150 msec)
+            Handler(Looper.getMainLooper()).postDelayed({
+                zoomOut.isEnabled = !timelineView.isMaxInterval
+                zoomIn.isEnabled = true
+            }, TimelineView.ANIMATION_DURATION_MSEC + 1)
+        }
+        root.findViewById<View>(R.id.lastEvent).setOnClickListener {
+            gotoLastMajor1Record()
+        }
+        root.findViewById<View>(R.id.prevEvent).setOnClickListener {
+            gotoPrevRecord(true)
+        }
+        root.findViewById<View>(R.id.nextEvent).setOnClickListener {
+            gotoNextRecord(true)
+        }
         return root
     }
 
@@ -98,7 +128,7 @@ class TimelineFragment : Fragment() {
 
     private fun gotoLastMajor1Record() {
         if (DEBUG) Log.v(TAG, "gotoLastMajor1Record()")
-        var records: java.util.ArrayList<TimeRecord> = timelineView.getMajor1Records()
+        var records: java.util.ArrayList<TimeRecord> = timelineView.major1Records
         // At least one event exists
         if (records.size > 0) {
             val record = records[0]
@@ -108,15 +138,45 @@ class TimelineFragment : Fragment() {
             timelineView.invalidate()
         } else {
             // No events found. Show last video recording.
-            records = timelineView.getBackgroundRecords()
+            records = timelineView.backgroundRecords
             if (records.size > 0) {
                 val record = records[0]
                 // 30 sec before video finished.
-                val timestamp = record.timestampMsec + Math.max(record.durationMsec - 30000, 0)
+                val timestamp = record.timestampMsec + max(record.durationMsec - 30000, 0)
                 onTimeSelected(timestamp, record)
                 timelineView.setCurrentWithAnimation(record.timestampMsec)
                 timelineView.invalidate()
             }
+        }
+    }
+
+    private fun gotoPrevRecord(animation: Boolean) {
+        if (DEBUG) Log.v(TAG, "gotoPrevRecord(animation=$animation)")
+        val record: TimeRecord? = timelineView.getPrevMajorRecord()
+        if (record != null) {
+            Log.i(TAG, record.toString())
+            val timestamp = getTimestampFromRecord(record)
+            onTimeSelected(timestamp, record)
+            if (animation)
+                timelineView.setCurrentWithAnimation(record.timestampMsec)
+            else
+                timelineView.setCurrent(record.timestampMsec)
+            timelineView.invalidate()
+        }
+    }
+
+    private fun gotoNextRecord(animation: Boolean) {
+        if (DEBUG) Log.v(TAG, "gotoNextRecord(animation=$animation)")
+        val record: TimeRecord? = timelineView.getNextMajorRecord()
+        if (record != null) {
+            Log.i(TAG, record.toString())
+            val timestamp = getTimestampFromRecord(record)
+            onTimeSelected(timestamp, record)
+            if (animation)
+                timelineView.setCurrentWithAnimation(record.timestampMsec)
+            else
+                timelineView.setCurrent(record.timestampMsec)
+            timelineView.invalidate()
         }
     }
 
