@@ -8,7 +8,7 @@ Android timeline UI widget written in Java
 - Android min API 21.
 - Supports single timeline.
 - Supports on demand loading.
-- Shows 1 min, 5 min, 15 min, 30 min, 1 hour, 6 hours, 12 hours, 1 day, 7 days ranges.
+- Shows 1 min, 5 min, 15 min, 30 min, 1 hour, 6 hours, 12 hours, 1 day, 7 days, 30 days ranges.
 
 ## See also:
 - [Web timeline UI widget written in JavaScript](https://github.com/alexeyvasilyev/timeline-ui-web)
@@ -24,6 +24,6 @@ allprojects {
   }
 }
 dependencies {
-  implementation 'com.github.alexeyvasilyev:timeline-ui-android:1.0.1'
+  implementation 'com.github.alexeyvasilyev:timeline-ui-android:1.3.0'
 }
 ```
