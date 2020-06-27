@@ -53,6 +53,8 @@ public class TimelineView extends View {
     public static final long INTERVAL_DAY_7   = 168 * 60 * 60 * 1000L; //  7 days
     public static final long INTERVAL_DAY_30  = 720 * 60 * 60 * 1000L; // 30 days
 
+    public static final long ANIMATION_DURATION_MSEC = 150;
+
     @SuppressWarnings("FieldCanBeLocal")
     private final float STROKE_SELECTED_WIDTH = 2f;
     @SuppressWarnings("FieldCanBeLocal")
@@ -61,8 +63,6 @@ public class TimelineView extends View {
     private final long MIN_INTERVAL = INTERVAL_MIN_1; // 1 min
     @SuppressWarnings("FieldCanBeLocal")
     private final long MAX_INTERVAL = INTERVAL_DAY_30; // 30 days
-
-    private final int ANIMATION_DURATION_MSEC = 150;
 
     public interface TimeDateFormatter {
         @NonNull String getStringTime(@NonNull Date date);
@@ -321,6 +321,14 @@ public class TimelineView extends View {
             _intervalMsec = intervalMsec;
             _needUpdate = true;
         }
+    }
+
+    public boolean isMinInterval() {
+        return _intervalMsec < MIN_INTERVAL + 1;
+    }
+
+    public boolean isMaxInterval() {
+        return _intervalMsec > MAX_INTERVAL - 1;
     }
 
     public void increaseIntervalWithAnimation() {
