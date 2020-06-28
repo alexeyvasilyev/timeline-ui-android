@@ -915,13 +915,13 @@ public class TimelineView extends View {
 
         // Draw minor rectangles
         for (DrawRect rect : _rectsBackground) {
-            if (rect.color != -1) {
-                p.setColor(rect.color);
-                p.setStyle(Paint.Style.FILL);
-                canvas.drawRect(rect.left, rect.top, rect.right, rect.bottom, p);
-            } else {
+//            if (rect.color != -1) {
+//                p.setColor(rect.color);
+//                p.setStyle(Paint.Style.FILL);
+//                canvas.drawRect(rect.left, rect.top, rect.right, rect.bottom, p);
+//            } else {
                 canvas.drawRect(rect.left, rect.top, rect.right, rect.bottom, _paintBackground);
-            }
+//            }
         }
 
 //        long l3 = System.currentTimeMillis();
