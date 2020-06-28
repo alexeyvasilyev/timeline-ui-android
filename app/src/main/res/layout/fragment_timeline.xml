@@ -12,7 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:padding="10dp">
-
         <com.alexvas.widget.TimelineView
             android:id="@+id/timeline"
             android:layout_width="match_parent"
@@ -25,7 +24,6 @@
             app:timelineColorMajor2="#FF6D00"
             app:timelineColorBackground="#2e484b"
             app:timelineColorNoData="#2b2b2b"/>
-
     </FrameLayout>
 
     <HorizontalScrollView
@@ -80,5 +78,21 @@
                 android:background="?attr/selectableItemBackgroundBorderless"/>
         </LinearLayout>
     </HorizontalScrollView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="50dp"
+        android:text="Default colors:"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:padding="10dp">
+        <com.alexvas.widget.TimelineView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </FrameLayout>
 
 </LinearLayout>

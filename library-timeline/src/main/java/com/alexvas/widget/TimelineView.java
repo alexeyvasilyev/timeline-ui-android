@@ -13,6 +13,8 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -81,10 +83,15 @@ public class TimelineView extends View {
         public final long timestampMsec; // absolute
         public final long durationMsec;  // relative
         public final Object object;
+        @ColorInt public final int color;
         public TimeRecord(long startMs, long durationMs, @NonNull Object obj) {
+            this(startMs, durationMs, obj, -1);
+        }
+        public TimeRecord(long startMs, long durationMs, @NonNull Object obj, int color) {
             timestampMsec = startMs;
             durationMsec  = durationMs;
             object = obj;
+            this.color = color;
         }
         @Override
         @NonNull
@@ -122,15 +129,36 @@ public class TimelineView extends View {
         }
     }
 
+    private static class DrawRect {
+        public int left;
+        public int top;
+        public int right;
+        public int bottom;
+        @ColorInt int color = -1;
+        public DrawRect() {}
+        public DrawRect(int left, int top, int right, int bottom) {
+            this.left = left;
+            this.top = top;
+            this.right = right;
+            this.bottom = bottom;
+        }
+        public void set(int left, int top, int right, int bottom) {
+            this.left = left;
+            this.top = top;
+            this.right = right;
+            this.bottom = bottom;
+        }
+    }
+
     private ArrayList<TimeRecord> _recordsMajor1 = new ArrayList<>();
     private ArrayList<TimeRecord> _recordsMajor2 = new ArrayList<>();
     private ArrayList<TimeRecord> _recordsBackground = new ArrayList<>();
-    private Rect _rectMajor1Selected = null;
-    private Rect _rectMajor2Selected = null;
-    private final ArrayList<Rect> _rectsMajor1 = new ArrayList<>();
-    private final ArrayList<Rect> _rectsMajor2 = new ArrayList<>();
-    private final ArrayList<Rect> _rectsBackground = new ArrayList<>();
-    private final Rect _rectNoData = new Rect();
+    private DrawRect _rectMajor1Selected = null;
+    private DrawRect _rectMajor2Selected = null;
+    private final ArrayList<DrawRect> _rectsMajor1 = new ArrayList<>();
+    private final ArrayList<DrawRect> _rectsMajor2 = new ArrayList<>();
+    private final ArrayList<DrawRect> _rectsBackground = new ArrayList<>();
+    private final DrawRect _rectNoData = new DrawRect();
 
     private final Paint _paintMajor1 = new Paint();
     private final Paint _paintMajor2 = new Paint();
@@ -471,7 +499,7 @@ public class TimelineView extends View {
             if ((record.timestampMsec + record.durationMsec) >= minValue &&
                 (record.timestampMsec) <= maxValue) {
 
-                Rect rect = new Rect(
+                DrawRect rect = new DrawRect(
                         Math.max((int) ((record.timestampMsec - minValue) * msecInPixels), 0), // left
                         offsetMajor1, // top
                         Math.min((int) ((record.timestampMsec - minValue + record.durationMsec) * msecInPixels), width), // right
@@ -483,6 +511,7 @@ public class TimelineView extends View {
 
                     _rectMajor1Selected = rect;
                 } else {
+                    rect.color = record.color;
                     _rectsMajor1.add(rect);
                 }
             }
@@ -501,7 +530,7 @@ public class TimelineView extends View {
             if ((record.timestampMsec + record.durationMsec) >= minValue &&
                 (record.timestampMsec) <= maxValue) {
 
-                Rect rect = new Rect(
+                DrawRect rect = new DrawRect(
                         Math.max((int) ((record.timestampMsec - minValue) * msecInPixels), 0), // left
                         offsetMajor2, // top
                         Math.min((int) ((record.timestampMsec - minValue + record.durationMsec) * msecInPixels), width), // right
@@ -513,6 +542,7 @@ public class TimelineView extends View {
 
                     _rectMajor2Selected = rect;
                 } else {
+                    rect.color = record.color;
                     _rectsMajor2.add(rect);
                 }
             }
@@ -530,12 +560,13 @@ public class TimelineView extends View {
             if ((record.timestampMsec + record.durationMsec) >= minValue &&
                 (record.timestampMsec) <= maxValue) {
 
-                Rect rect = new Rect(
+                DrawRect rect = new DrawRect(
                         Math.max((int)((record.timestampMsec - minValue) * msecInPixels), 0), // left
                         offsetBackground, // top
                         Math.min((int)((record.timestampMsec - minValue + record.durationMsec) * msecInPixels), width), // right
                         height - offsetBackground); // bottom
 
+                rect.color = record.color;
                 _rectsBackground.add(rect);
             }
 //            // Skip processing not shown older records
@@ -868,6 +899,7 @@ public class TimelineView extends View {
 
     private final Rect r = new Rect();
     private final RectF rf = new RectF();
+    private final Paint p = new Paint();
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -879,37 +911,71 @@ public class TimelineView extends View {
         }
 //        long l2 = System.currentTimeMillis();
 
-        canvas.drawRect(_rectNoData, _paintNoData);
+        canvas.drawRect(_rectNoData.left, _rectNoData.top, _rectNoData.right, _rectNoData.bottom, _paintNoData);
 
         // Draw minor rectangles
-        for (Rect rect : _rectsBackground) {
-            canvas.drawRect(rect, _paintBackground);
+        for (DrawRect rect : _rectsBackground) {
+            if (rect.color != -1) {
+                p.setColor(rect.color);
+                p.setStyle(Paint.Style.FILL);
+                canvas.drawRect(rect.left, rect.top, rect.right, rect.bottom, p);
+            } else {
+                canvas.drawRect(rect.left, rect.top, rect.right, rect.bottom, _paintBackground);
+            }
         }
 
 //        long l3 = System.currentTimeMillis();
         // Draw major rectangles
-        for (Rect rect : _rectsMajor1) {
-            canvas.drawRect(rect, _paintMajor1);
-            // Draw line on top to be sure that rect is not too narrow
-            canvas.drawLine(rect.left, rect.top, rect.left, rect.bottom, _paintMajor1);
+        for (DrawRect rect : _rectsMajor1) {
+            if (rect.color != -1) {
+                p.setColor(rect.color);
+                p.setStyle(Paint.Style.FILL);
+                p.setStrokeWidth(2f * _density);
+                canvas.drawRect(rect.left, rect.top, rect.right, rect.bottom, p);
+                // Draw line on top to be sure that rect is not too narrow
+                canvas.drawLine(rect.left, rect.top, rect.left, rect.bottom, p);
+            } else {
+                canvas.drawRect(rect.left, rect.top, rect.right, rect.bottom, _paintMajor1);
+                // Draw line on top to be sure that rect is not too narrow
+                canvas.drawLine(rect.left, rect.top, rect.left, rect.bottom, _paintMajor1);
+            }
         }
 
 //        long l4 = System.currentTimeMillis();
-        for (Rect rect : _rectsMajor2) {
-            canvas.drawRect(rect, _paintMajor2);
-            // Draw line on top to be sure that rect is not too narrow
-            canvas.drawLine(rect.left, rect.top, rect.left, rect.bottom, _paintMajor2);
+        for (DrawRect rect : _rectsMajor2) {
+            if (rect.color != -1) {
+                p.setColor(rect.color);
+                p.setStyle(Paint.Style.FILL);
+                p.setStrokeWidth(2f * _density);
+                canvas.drawRect(rect.left, rect.top, rect.right, rect.bottom, p);
+                // Draw line on top to be sure that rect is not too narrow
+                canvas.drawLine(rect.left, rect.top, rect.left, rect.bottom, p);
+            } else {
+                canvas.drawRect(rect.left, rect.top, rect.right, rect.bottom, _paintMajor2);
+                // Draw line on top to be sure that rect is not too narrow
+                canvas.drawLine(rect.left, rect.top, rect.left, rect.bottom, _paintMajor2);
+            }
         }
 //        long l5 = System.currentTimeMillis();
 
         // Draw currently selected rectangle
         if (_rectMajor1Selected != null) {
-            canvas.drawRect(_rectMajor1Selected, _paintSelected1);
+            canvas.drawRect(
+                    _rectMajor1Selected.left,
+                    _rectMajor1Selected.top,
+                    _rectMajor1Selected.right,
+                    _rectMajor1Selected.bottom,
+                    _paintSelected1);
         }
 
 //        long l6 = System.currentTimeMillis();
         if (_rectMajor2Selected != null) {
-            canvas.drawRect(_rectMajor2Selected, _paintSelected2);
+            canvas.drawRect(
+                    _rectMajor2Selected.left,
+                    _rectMajor2Selected.top,
+                    _rectMajor2Selected.right,
+                    _rectMajor2Selected.bottom,
+                    _paintSelected2);
         }
 
 //        long l7 = System.currentTimeMillis();

@@ -1,5 +1,6 @@
 package com.alexvas.timeline.demo.ui
 
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -95,27 +96,30 @@ class TimelineFragment : Fragment() {
         timelineViewModel.saveParams(context)
     }
 
-    class EventRecord(videoOffset: Int)
+    class EventRecord()
 
     private fun loadFirstValues() {
         if (DEBUG) Log.v(TAG, "loadFirstValues()")
         val time = System.currentTimeMillis()
         recordsMajor1Events.clear()
-        recordsMajor1Events.add(TimeRecord(time - 5000, 1000, EventRecord(0)))
-        recordsMajor1Events.add(TimeRecord(time - 30000, 20000, EventRecord(0)))
-        recordsMajor1Events.add(TimeRecord(time - 300000, 20000, EventRecord(0)))
-        recordsMajor1Events.add(TimeRecord(time - 1800000, 100000, EventRecord(0)))
-        recordsMajor1Events.add(TimeRecord(time - 3600000, 70000, EventRecord(0)))
-        recordsMajor1Events.add(TimeRecord(time - 360000000, 150000, EventRecord(0)))
-        recordsMajor1Events.add(TimeRecord(time - 500000000, 1500000, EventRecord(0)))
+        recordsMajor1Events.add(TimeRecord(time - 5000, 1000, EventRecord()))
+        recordsMajor1Events.add(TimeRecord(time - 30000, 20000, EventRecord()))
+        recordsMajor1Events.add(TimeRecord(time - 300000, 20000, EventRecord()))
+        recordsMajor1Events.add(TimeRecord(time - 1800000, 100000, EventRecord()))
+        recordsMajor1Events.add(TimeRecord(time - 3600000, 70000, EventRecord()))
+        recordsMajor1Events.add(TimeRecord(time - 360000000, 150000, EventRecord()))
+        recordsMajor1Events.add(TimeRecord(time - 500000000, 1500000, EventRecord()))
 
         recordsMajor2Events.clear()
-        recordsMajor2Events.add(TimeRecord(time - 500, 500, EventRecord(0)))
+        recordsMajor2Events.add(TimeRecord(time - 500, 2000, EventRecord()))
+        recordsMajor2Events.add(TimeRecord(time - 5200, 500, EventRecord()))
+        // Overwriting default draw color
+        recordsMajor2Events.add(TimeRecord(time - 6000, 1000, EventRecord(), Color.YELLOW))
 
         recordsBackgroundEvents.clear()
-        recordsBackgroundEvents.add(TimeRecord(time - 500000, 500000, EventRecord(0)))
-        recordsBackgroundEvents.add(TimeRecord(time - 1000000, 250000, EventRecord(0)))
-        recordsBackgroundEvents.add(TimeRecord(time - 2500000, 1000000, EventRecord(0)))
+        recordsBackgroundEvents.add(TimeRecord(time - 500000, 500000, EventRecord()))
+        recordsBackgroundEvents.add(TimeRecord(time - 1000000, 250000, EventRecord()))
+        recordsBackgroundEvents.add(TimeRecord(time - 2500000, 1000000, EventRecord()))
     }
 
     private fun updateTimeline() {
