@@ -89,7 +89,7 @@ public class TimelineView extends View {
         }
         public TimeRecord(long startMs, long durationMs, @NonNull Object obj, int color) {
             timestampMsec = startMs;
-            durationMsec = Math.max(1000, durationMs); // min 1 sec
+            durationMsec = Math.max(1500, durationMs); // min 1.5 sec
             object = obj;
             this.color = color;
         }
