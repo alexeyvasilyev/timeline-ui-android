@@ -81,7 +81,7 @@ public class TimelineView extends View {
 
     public static class TimeRecord {
         public final long timestampMsec; // absolute
-        public final long durationMsec;  // relative
+        public final long durationMsec;  // relative. Can be 0 if unknown.
         public final Object object;
         @ColorInt public final int color;
         public TimeRecord(long startMs, long durationMs, @NonNull Object obj) {
@@ -89,7 +89,7 @@ public class TimelineView extends View {
         }
         public TimeRecord(long startMs, long durationMs, @NonNull Object obj, int color) {
             timestampMsec = startMs;
-            durationMsec  = durationMs;
+            durationMsec = Math.max(1000, durationMs); // min 1 sec
             object = obj;
             this.color = color;
         }

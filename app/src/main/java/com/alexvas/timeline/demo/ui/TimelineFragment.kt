@@ -102,6 +102,8 @@ class TimelineFragment : Fragment() {
         if (DEBUG) Log.v(TAG, "loadFirstValues()")
         val time = System.currentTimeMillis()
         recordsMajor1Events.clear()
+        recordsMajor1Events.add(TimeRecord(time - 1000, 0, EventRecord())) // duration can be 0 if unknown
+        recordsMajor1Events.add(TimeRecord(time - 2000, 0, EventRecord()))
         recordsMajor1Events.add(TimeRecord(time - 5000, 1000, EventRecord()))
         recordsMajor1Events.add(TimeRecord(time - 30000, 20000, EventRecord()))
         recordsMajor1Events.add(TimeRecord(time - 300000, 20000, EventRecord()))
@@ -117,6 +119,7 @@ class TimelineFragment : Fragment() {
         recordsMajor2Events.add(TimeRecord(time - 6000, 1000, EventRecord(), Color.YELLOW))
 
         recordsBackgroundEvents.clear()
+        recordsBackgroundEvents.add(TimeRecord(time - 50000, 20000, EventRecord()))
         recordsBackgroundEvents.add(TimeRecord(time - 500000, 500000, EventRecord()))
         recordsBackgroundEvents.add(TimeRecord(time - 1000000, 250000, EventRecord()))
         recordsBackgroundEvents.add(TimeRecord(time - 2500000, 1000000, EventRecord()))
