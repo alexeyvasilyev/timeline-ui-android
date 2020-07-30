@@ -486,7 +486,7 @@ public class TimelineView extends View {
         boolean isLandscape = isLandscape();
         int offsetBackground = (int)((isLandscape ? 2.6 : 3.4) * OFFSET_TOP_BOTTOM * _density);
         int offsetMajor1     = (int)((isLandscape ? 2.6 : 3.4) * OFFSET_TOP_BOTTOM * _density);
-        int offsetMajor2     = (int)((isLandscape ? 3.0 : 4.0) * OFFSET_TOP_BOTTOM * _density);
+        int offsetMajor2     = (int)((isLandscape ? 3.2 : 4.2) * OFFSET_TOP_BOTTOM * _density);
 
         _rectNoData.set(
                 0, // left
