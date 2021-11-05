@@ -1,5 +1,6 @@
 Android timeline UI widget written in Java
 =============================================
+[![Release](https://jitpack.io/v/alexeyvasilyev/timeline-ui-android.svg)](https://jitpack.io/#alexeyvasilyev/timeline-ui-android)
 
 ![Screenshot](docs/images/timeline-android-screenshot1.png?raw=true "Screenshot")
 
@@ -24,6 +25,6 @@ allprojects {
   }
 }
 dependencies {
-  implementation 'com.github.alexeyvasilyev:timeline-ui-android:1.4.4'
+  implementation 'com.github.alexeyvasilyev:timeline-ui-android:1.4.6'
 }
 ```
