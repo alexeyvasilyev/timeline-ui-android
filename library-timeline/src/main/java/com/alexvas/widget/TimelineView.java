@@ -813,14 +813,14 @@ public class TimelineView extends View {
             removeCallbacks(_selectedRunnable);
         }
 
-        private ValueAnimator.AnimatorUpdateListener flingAnimatorListener = new ValueAnimator.AnimatorUpdateListener() {
+        private final ValueAnimator.AnimatorUpdateListener flingAnimatorListener = new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 setCurrent(savedValue + (int)animation.getAnimatedValue());
                 invalidate();
             }
         };
-        private Animator.AnimatorListener animatorListener = new AnimatorListenerAdapter() {
+        private final Animator.AnimatorListener animatorListener = new AnimatorListenerAdapter() {
             @Override
             public void onAnimationCancel(Animator animation) {
                 _waitForNextActionUp = true;
