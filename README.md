@@ -25,6 +25,6 @@ allprojects {
   }
 }
 dependencies {
-  implementation 'com.github.alexeyvasilyev:timeline-ui-android:1.4.6'
+  implementation 'com.github.alexeyvasilyev:timeline-ui-android:1.4.7'
 }
 ```
