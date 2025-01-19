@@ -4,7 +4,6 @@ plugins {
     id 'maven-publish'
 }
 
-apply from: '../constants.gradle'
 apply plugin: 'com.android.library'
 
 project.afterEvaluate {
@@ -18,14 +17,25 @@ project.afterEvaluate {
 }
 
 android {
-    compileSdkVersion compile_sdk_version
+    compileSdk compile_sdk_version
 
     defaultConfig {
-        minSdkVersion min_sdk_version
-        targetSdkVersion target_sdk_version
+        minSdk min_sdk_version
+        targetSdk target_sdk_version
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17.toString()
+    }
+
+    namespace 'com.alexvas.widget.timeline'
 }
 
 dependencies {
-    implementation "androidx.annotation:annotation:${androidXAnnotationVersion}"
+    implementation 'androidx.annotation:annotation:1.9.1'
 }
